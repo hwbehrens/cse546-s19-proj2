@@ -1,6 +1,3 @@
-# the goal of this program is to provide a stand-alone, self-contained, and simple way for
-# non-Python applications to update their status in the state database without having to
-# know anything about Mongo, SSH, etc.
 
 import json
 import os
@@ -31,24 +28,6 @@ def log(my_string):
             errorlog.write(json.dumps(str(my_string)) + "\n")
     except FileNotFoundError:
         print("No log file found.")
-
-
-#
-# def recursive_strip_objectid(thing_to_clean):
-#     if type(thing_to_clean) == dict:
-#         new_dict = dict()
-#         for each in thing_to_clean.keys():
-#             new_dict[each] = recursive_strip_objectid(thing_to_clean[each])
-#         return new_dict
-#     elif type(thing_to_clean) == list:
-#         new_list = []
-#         for each in thing_to_clean:
-#             new_list.append(recursive_strip_objectid(each))
-#         return new_list
-#     elif type(thing_to_clean) == ObjectId:
-#         return "obid-" + str(thing_to_clean)
-#     else:
-#         return thing_to_clean  # no need to clean
 
 
 def main():
@@ -111,11 +90,6 @@ def fetch_job():
     log("Fetching job...")
 
     # pull the current job from the 'running' queue, and write to disk as a JSON file
-
-    # are we done working on the previous job? let's check
-    # if not DEBUG and STATE_CONFIG["current_job"] is not None:
-    #     log("Cannot fetch a new job until previous job is completed.")
-    #     return
 
     instance_id = STATE_CONFIG["instance_id"]
     model_type = STATE_CONFIG["model_type"]
@@ -251,22 +225,12 @@ def finish_job():
         return False
 
     # take the current job in the 'running' queue, write some result to the ds_results database,
-    #      move it to the 'done' queue, and update the local state
-
-    # are we done working on the previous job? let's  check
-    # if STATE_CONFIG["current_job"] is None:
-    #     log("No currently-running job detected; nothing to finish!")
-    #     return
 
     # ensure local state and server state agree (if not, two instances have the same id - bad!)
     instance_id = STATE_CONFIG["instance_id"]
     local_id = ObjectId(CURR_JOB_HEX)
     my_model = STATE_CONFIG["model_type"]
     curr_state = MONGO_CLIENT.ds_state.cluster.find_one({"instance": instance_id})
-    # server_id = curr_state["pool"]["running"][0]
-    # if local_id != server_id:
-    #     log("Local job id ({0}) and server job id ({1}) do not match! Fix this.")
-    #     return
     job_id = local_id
 
     log("Error checks passed, continuing...")

@@ -17,7 +17,7 @@ DEBUG = False
 JOB_HEX = ""
 
 os.chdir("/home/cc/gcloud/")
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "my-test-project-3fc9b0714516.json"
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "gauth.json"
 BUCKET = gcs.Client(project="my-test-project-239201").get_bucket("datastorm")
 
 
@@ -182,8 +182,6 @@ def process(job_hex):
 
     store_results(record_list)
     update_state()
-
-    log("JobGateway is all done! Results have been saved.")
 
 
 def log(my_string):
